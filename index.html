@@ -1,586 +1,314 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>okuSystem - Sistemas profesionales para Roblox Studio</title>
-    
     <meta name="description" content="okuSystem ofrece sistemas profesionales de sonido, visualizadores, luces y música para Roblox Studio. Creado por oku, programador experto en códigos y sistemas.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="icon" href="https://raw.githubusercontent.com/OkumaruSenpai/OkuSytems/main/DragonNew.png" type="image/png">
+    <link rel="icon" href="https://raw.githubusercontent.com/OkumaruSenpai/OkuSytems/main/DragonNew.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* ---------- Reset ---------- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ---------- Tema Negro + Dorado ---------- */
+        :root{
+            --gold: #D4AF37;              /* dorado principal */
+            --gold-2:#A67C00;             /* dorado profundo */
+            --gold-soft:#FFE8A3;          /* dorado suave para brillos */
+            --bg:#0A0A0B;                 /* negro profundo */
+            --bg-elev:#111114;            /* cartas */
+            --text:#F5F5F6;               /* texto principal */
+            --muted:#B6B6B9;              /* texto secundario */
+            --border:#1F1F22;             /* bordes sutiles */
+            --ring: rgba(212,175,55,.35); /* resplandor dorado */
         }
 
-        :root {
-            --primary: #a78bfa;
-            --primary-dark: #7c3aed;
-            --secondary: #06b6d4;
-            --bg-dark: hsl(220, 25%, 8%);
-            --bg-card: hsl(220, 20%, 12%);
-            --text-primary: hsl(220, 15%, 95%);
-            --text-secondary: hsl(220, 10%, 70%);
-            --text-muted: hsl(220, 8%, 50%);
-            --border: hsl(220, 15%, 20%);
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-primary);
+        body{
+            font-family:'Inter', -apple-system, BlinkMacSystemFont,'Segoe UI',sans-serif;
+            background: var(--bg);
+            color: var(--text);
             line-height: 1.6;
             overflow-x: hidden;
         }
+        .font-display{ font-family:'Space Grotesk','Inter',sans-serif; }
 
-        .font-display {
-            font-family: 'Space Grotesk', 'Inter', sans-serif;
-        }
-
-        /* Navbar */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: rgba(15, 16, 20, 0.8);
-            backdrop-filter: blur(20px);
+        /* ---------- Navbar ---------- */
+        nav{
+            position: fixed; inset: 0 0 auto 0; z-index: 1000;
+            background: rgba(10,10,11,.5);
+            backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
         }
+        .nav-container{
+            max-width:1200px; margin:0 auto; padding: .875rem 1.25rem;
+            display:flex; align-items:center; justify-content:space-between;
+        }
+        .logo{
+            font-family:'Space Grotesk',sans-serif;
+            font-size:1.5rem; font-weight:800; letter-spacing:.3px;
+            background: linear-gradient(100deg, var(--gold), var(--gold-2), var(--gold));
+            background-size: 200% 200%;
+            -webkit-background-clip:text; background-clip:text;
+            -webkit-text-fill-color:transparent;
+            border:none; background-color:transparent; cursor:pointer;
+            animation: goldShift 8s ease-in-out infinite;
+        }
+        .nav-menu{ display:flex; gap:2rem; list-style:none; }
+        .nav-menu a{
+            color: var(--muted); text-decoration:none; position:relative;
+            transition: color .25s ease;
+        }
+        .nav-menu a::after{
+            content:""; position:absolute; left:0; bottom:-6px; height:2px; width:0%;
+            background: linear-gradient(90deg,var(--gold),var(--gold-soft));
+            transition: width .3s ease;
+        }
+        .nav-menu a:hover{ color: var(--text); }
+        .nav-menu a:hover::after{ width:100%; }
+        .mobile-menu-btn{ display:none; background:none; border:none; color:var(--text); font-size:1.5rem; cursor:pointer; }
 
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* ---------- Hero ---------- */
+        .hero{
+            min-height:100vh; display:flex; align-items:center; justify-content:center;
+            position:relative; overflow:hidden; padding: 8rem 1.25rem 4rem;
+            isolation:isolate;
         }
 
-        .logo {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            cursor: pointer;
-            border: none;
-            background-color: transparent;
+        /* Fondo dinámico constante */
+        .hero::before{
+            content:""; position:absolute; inset:-20% -20%;
+            background:
+                radial-gradient(60rem 60rem at 10% 10%, rgba(212,175,55,.10), transparent 60%),
+                radial-gradient(50rem 50rem at 90% 20%, rgba(255,232,163,.08), transparent 60%),
+                radial-gradient(70rem 70rem at 50% 80%, rgba(166,124,0,.10), transparent 60%),
+                linear-gradient(120deg, rgba(212,175,55,.05), rgba(0,0,0,0) 40%, rgba(166,124,0,.06));
+            filter: blur(0px);
+            animation: slowDrift 40s linear infinite;
+            z-index:0;
+        }
+        /* malla brillante en movimiento sutil */
+        .hero::after{
+            content:""; position:absolute; inset:-10% -10%;
+            background:
+                linear-gradient( to right, rgba(255,255,255,.06) 1px, transparent 1px),
+                linear-gradient( to bottom, rgba(255,255,255,.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(60rem 60rem at 50% 50%, black 30%, transparent 70%);
+            opacity:.25; transform: translate3d(0,0,0);
+            animation: gridPan 30s linear infinite;
+            z-index:1;
         }
 
-        .nav-menu {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
+        .hero-content{ position:relative; z-index:2; text-align:center; max-width:1200px; margin:0 auto; }
+
+        .hero-badge{
+            display:inline-flex; align-items:center; gap:.5rem; padding:.5rem 1rem;
+            background: rgba(212,175,55,.08);
+            border: 1px solid rgba(212,175,55,.35);
+            border-radius:9999px; font-size:.9rem; color:var(--muted);
+            box-shadow: 0 0 0 1px rgba(0,0,0,.4), 0 0 20px rgba(212,175,55,.12) inset;
+            animation: fadeInUp .8s ease both .1s;
         }
 
-        .nav-menu a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s;
+        .hero h1{
+            font-family:'Space Grotesk',sans-serif;
+            font-size:clamp(3rem,8vw,6rem); font-weight:800; margin:.8rem 0 1rem;
+            letter-spacing:.5px;
+            background: linear-gradient(100deg, var(--gold), var(--gold-soft), var(--gold-2), var(--gold));
+            background-size:300% 300%;
+            -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+            animation: fadeInUp .8s ease both .2s, goldShift 10s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(212,175,55,.15);
         }
 
-        .nav-menu a:hover {
-            color: var(--text-primary);
+        .hero p{
+            font-size:1.2rem; color:var(--muted); max-width:48rem; margin:0 auto 2.2rem;
+            animation: fadeInUp .8s ease both .3s;
         }
 
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 1.5rem;
-            cursor: pointer;
+        .hero-buttons{
+            display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;
+            animation: fadeInUp .8s ease both .4s;
         }
 
-        /* Hero */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            padding: 8rem 1.5rem 4rem;
+        .btn{
+            padding:.9rem 2rem; border-radius:.65rem; font-weight:700; letter-spacing:.2px;
+            border:1px solid transparent; cursor:pointer; font-size:1rem;
+            display:inline-flex; align-items:center; gap:.5rem; transition: all .25s ease;
+            transform: translateZ(0);
         }
-
-        .hero-bg {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom right, rgba(167, 139, 250, 0.2), var(--bg-dark), rgba(6, 182, 212, 0.2));
+        .btn-primary{
+            background: radial-gradient(120% 120% at 30% 30%, var(--gold) 0%, var(--gold-2) 60%);
+            color:#0A0A0A;
+            box-shadow: 0 6px 24px rgba(212,175,55,.25), inset 0 0 0 1px rgba(255,255,255,.12);
+            animation: softGlow 2.6s ease-in-out infinite;
         }
-
-        .hero-blob-1 {
-            position: absolute;
-            top: 5rem;
-            left: 2rem;
-            width: 18rem;
-            height: 18rem;
-            background: rgba(167, 139, 250, 0.3);
-            border-radius: 50%;
-            filter: blur(60px);
-            animation: float 6s ease-in-out infinite;
+        .btn-primary:hover{ transform: translateY(-2px) scale(1.02); box-shadow:0 10px 30px rgba(212,175,55,.35); }
+        .btn-outline{
+            background: rgba(212,175,55,.06);
+            color: var(--text);
+            border:1px solid rgba(212,175,55,.35);
         }
+        .btn-outline:hover{ background: rgba(212,175,55,.12); box-shadow: 0 6px 20px rgba(212,175,55,.15); }
 
-        .hero-blob-2 {
-            position: absolute;
-            bottom: 5rem;
-            right: 2rem;
-            width: 24rem;
-            height: 24rem;
-            background: rgba(6, 182, 212, 0.2);
-            border-radius: 50%;
-            filter: blur(60px);
-            animation: float 6s ease-in-out infinite;
-            animation-delay: 1s;
+        /* ---------- Sección Sobre ---------- */
+        .about{ padding: 6rem 1.25rem; }
+        .about-container{ max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1fr; gap:3rem; align-items:center; }
+        .about-badge{
+            display:inline-flex; align-items:center; gap:.5rem; padding:.45rem 1rem;
+            background: rgba(212,175,55,.06); border:1px solid rgba(212,175,55,.28);
+            border-radius:9999px; color:var(--muted);
         }
-
-        .hero-content {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            max-width: 1200px;
-            margin: 0 auto;
+        .about h2{
+            font-family:'Space Grotesk',sans-serif; font-size:3rem; font-weight:800; margin:1rem 0 1.2rem;
+            background: linear-gradient(90deg, var(--gold), var(--gold-2));
+            -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
         }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(167, 139, 250, 0.1);
-            border: 1px solid rgba(167, 139, 250, 0.3);
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-        }
-
-        .hero h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(to right, var(--primary), var(--secondary), var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: fadeInUp 0.6s ease-out 0.1s both;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            max-width: 48rem;
-            margin: 0 auto 3rem;
-            animation: fadeInUp 0.6s ease-out 0.2s both;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            animation: fadeInUp 0.6s ease-out 0.3s both;
-        }
-
-        .btn {
-            padding: 0.875rem 2rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: none;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            animation: glow 2s ease-in-out infinite;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .btn-outline {
-            background: rgba(167, 139, 250, 0.1);
-            color: var(--text-primary);
-            border: 1px solid var(--primary);
-            backdrop-filter: blur(10px);
-        }
-
-        .btn-outline:hover {
-            background: rgba(167, 139, 250, 0.2);
-        }
-
-        /* About Section */
-        .about {
-            padding: 6rem 1.5rem;
-        }
-
-        .about-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .about-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--bg-card);
+        .about p{ color:var(--muted); margin-bottom:1rem; }
+        .about-card{
+            background: var(--bg-elev);
             border: 1px solid var(--border);
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
+            border-radius:.75rem; padding:2rem; position:relative; overflow:hidden;
+        }
+        .about-card::after{
+            content:""; position:absolute; inset:-40% -40%;
+            background: radial-gradient(40rem 40rem at var(--mx,80%) var(--my,20%), rgba(212,175,55,.06), transparent 60%);
+            pointer-events:none; transition: .2s ease;
+        }
+        .about-card:hover{ border-color: rgba(212,175,55,.35); box-shadow: 0 0 0 1px rgba(212,175,55,.08) inset, 0 10px 30px rgba(0,0,0,.3); }
+
+        .feature-item{ display:flex; gap:1rem; margin-bottom:1.5rem; }
+        .feature-icon{
+            width:3rem; height:3rem; border-radius:.5rem; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+            background: rgba(212,175,55,.08); color: var(--gold);
+            box-shadow: inset 0 0 0 1px rgba(212,175,55,.22);
         }
 
-        .about h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        /* ---------- Servicios ---------- */
+        .services{ padding:6rem 1.25rem; background: rgba(212,175,55,.03); }
+        .services-container{ max-width:1400px; margin:0 auto; }
+        .section-header{ text-align:center; margin-bottom:3.5rem; }
+        .section-header h2{
+            font-family:'Space Grotesk',sans-serif; font-size:clamp(2.5rem,5vw,4rem); font-weight:800; margin-bottom:1rem;
+            background: linear-gradient(90deg, var(--gold), var(--gold-2));
+            -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
         }
+        .section-header p{ font-size:1.1rem; color:var(--muted); max-width:42rem; margin:0 auto; }
 
-        .about p {
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-        }
-
-        .about-card {
-            background: var(--bg-card);
+        .services-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:1.5rem; }
+        .service-card{
+            background: var(--bg-elev);
             border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            padding: 2rem;
+            border-radius:.8rem; padding: 2rem; transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+            position:relative; overflow:hidden;
         }
-
-        .feature-item {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+        .service-card::after{
+            content:""; position:absolute; inset:0;
+            background: radial-gradient(30rem 30rem at 80% -10%, rgba(212,175,55,.08), transparent 60%);
+            opacity:0; transition: opacity .3s ease;
         }
-
-        .feature-icon {
-            width: 3rem;
-            height: 3rem;
-            border-radius: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+        .service-card:hover{
+            transform: translateY(-6px) scale(1.015);
+            border-color: rgba(212,175,55,.35);
+            box-shadow: 0 16px 40px rgba(0,0,0,.4), 0 0 0 1px rgba(212,175,55,.06) inset;
         }
+        .service-card:hover::after{ opacity:1; }
 
-        .feature-icon-primary {
-            background: rgba(167, 139, 250, 0.1);
-            color: var(--primary);
+        .service-icon{
+            width:3.5rem; height:3.5rem; border-radius:.6rem; margin-bottom:1rem;
+            display:flex; align-items:center; justify-content:center;
+            background: conic-gradient(from 0deg, var(--gold), var(--gold-2), var(--gold));
+            animation: spinSlow 10s linear infinite;
+            box-shadow: 0 0 0 1px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.06);
         }
+        .service-card h3{ font-size:1.35rem; font-weight:700; margin-bottom:.5rem; }
+        .service-card p{ color:var(--muted); }
 
-        .feature-icon-secondary {
-            background: rgba(6, 182, 212, 0.1);
-            color: var(--secondary);
+        /* ---------- Contacto ---------- */
+        .contact{ padding:6rem 1.25rem; }
+        .contact-container{ max-width:1200px; margin:0 auto; }
+        .contact-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap:1.5rem; margin-bottom:2rem; }
+
+        .contact-card{
+            background: var(--bg-elev); border:1px solid var(--border);
+            border-radius:.75rem; padding:2rem; transition: border-color .25s, box-shadow .25s;
         }
+        .contact-card:hover{ border-color: rgba(212,175,55,.35); box-shadow: 0 8px 24px rgba(212,175,55,.1); }
+        .contact-card-header{ display:flex; align-items:center; gap:1rem; margin-bottom:1rem; }
+        .contact-icon{ width:3rem; height:3rem; border-radius:.5rem; display:flex; align-items:center; justify-content:center; background: rgba(212,175,55,.09); color: var(--gold); box-shadow: inset 0 0 0 1px rgba(212,175,55,.22); }
 
-        /* Services */
-        .services {
-            padding: 6rem 1.5rem;
-            background: rgba(167, 139, 250, 0.03);
+        .discord-card{
+            background: linear-gradient(180deg, rgba(212,175,55,.06), rgba(0,0,0,.15));
+            border: 1px solid rgba(212,175,55,.25);
+            padding:2rem; border-radius:.8rem; display:block;
+            box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
         }
+        .discord-header{ display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem; }
+        .discord-icon{ width:3.5rem; height:3.5rem; border-radius:.5rem; background: var(--gold); display:flex; align-items:center; justify-content:center; }
 
-        .services-container {
-            max-width: 1400px;
-            margin: 0 auto;
+        /* ---------- Footer ---------- */
+        footer{ padding:3rem 1.25rem; border-top:1px solid var(--border); }
+        .footer-container{ max-width:1400px; margin:0 auto; }
+        .footer-grid{ display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:2rem; margin-bottom:2rem; }
+        .footer-links{ list-style:none; }
+        .footer-links li{ margin-bottom:.5rem; color:var(--muted); }
+        .footer-link{ color:var(--muted); text-decoration:none; display:flex; align-items:center; gap:.5rem; transition: color .25s; }
+        .footer-link:hover{ color: var(--gold); }
+        .footer-bottom{ padding-top:2rem; border-top:1px solid var(--border); text-align:center; color:var(--muted); }
+
+        /* ---------- Animaciones ---------- */
+        @keyframes fadeInUp{
+            from{ opacity:0; transform: translateY(16px); }
+            to{ opacity:1; transform: translateY(0); }
         }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
+        @keyframes goldShift{
+            0%{ background-position: 0% 50%; }
+            50%{ background-position: 100% 50%; }
+            100%{ background-position: 0% 50%; }
         }
-
-        .section-header h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        @keyframes softGlow{
+            0%,100%{ box-shadow: 0 6px 24px rgba(212,175,55,.25), inset 0 0 0 1px rgba(255,255,255,.12); }
+            50%{ box-shadow: 0 10px 32px rgba(212,175,55,.38), inset 0 0 0 1px rgba(255,255,255,.2); }
         }
-
-        .section-header p {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            max-width: 42rem;
-            margin: 0 auto;
+        @keyframes slowDrift{
+            0%{ transform: translate3d(0,0,0) scale(1); }
+            50%{ transform: translate3d(-2%, -2%, 0) scale(1.02); }
+            100%{ transform: translate3d(0,0,0) scale(1); }
         }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
+        @keyframes gridPan{
+            0%{ transform: translateY(0) translateX(0) }
+            100%{ transform: translateY(-40px) translateX(-80px) }
         }
+        @keyframes spinSlow{ from{ transform: rotate(0) } to{ transform: rotate(360deg) } }
 
-        .service-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            padding: 2rem;
-            transition: all 0.3s;
+        /* ---------- Responsive ---------- */
+        @media(min-width:768px){
+            .about-container{ grid-template-columns: 1fr 1fr; }
+            .discord-card{ display:flex; align-items:center; gap:2rem; }
+            .discord-content{ flex:1; }
         }
-
-        .service-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            border-color: var(--primary);
-        }
-
-        .service-icon {
-            width: 3.5rem;
-            height: 3.5rem;
-            border-radius: 0.5rem;
-            background: linear-gradient(to bottom right, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            transition: transform 0.3s;
-        }
-
-        .service-card:hover .service-icon {
-            transform: scale(1.1);
-        }
-
-        .service-card h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
-        .service-card p {
-            color: var(--text-secondary);
-        }
-
-        /* Contact */
-        .contact {
-            padding: 6rem 1.5rem;
-        }
-
-        .contact-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .contact-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            padding: 2rem;
-            transition: all 0.3s;
-        }
-
-        .contact-card:hover {
-            border-color: var(--primary);
-        }
-
-        .contact-card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .contact-icon {
-            width: 3rem;
-            height: 3rem;
-            border-radius: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .discord-card {
-            background: linear-gradient(to bottom right, rgba(167, 139, 250, 0.1), rgba(6, 182, 212, 0.1));
-            border: 1px solid rgba(167, 139, 250, 0.2);
-            padding: 2rem;
-            border-radius: 0.5rem;
-        }
-
-        .discord-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .discord-icon {
-            width: 3.5rem;
-            height: 3.5rem;
-            border-radius: 0.5rem;
-            background: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Footer */
-        footer {
-            padding: 3rem 1.5rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .footer-container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-links {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 0.5rem;
-            color: var(--text-secondary);
-        }
-
-        .footer-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: color 0.3s;
-        }
-
-        .footer-link:hover {
-            color: var(--primary);
-        }
-
-        .footer-bottom {
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
-            text-align: center;
-            color: var(--text-secondary);
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+        @media(max-width:768px){
+            .nav-menu{ display:none; }
+            .mobile-menu-btn{ display:block; }
+            .nav-menu.active{
+                display:flex; flex-direction:column; position:absolute; top:100%; left:0; right:0;
+                background: rgba(10,10,11,.98); backdrop-filter: blur(16px);
+                padding: 1rem 1.25rem; border-bottom:1px solid var(--border);
             }
         }
 
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
+        /* ---------- Accesibilidad: si el usuario prefiere menos movimiento ---------- */
+        @media (prefers-reduced-motion: reduce){
+            *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition:none !important; }
         }
 
-        @keyframes glow {
-            0%, 100% {
-                box-shadow: 0 0 20px rgba(167, 139, 250, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 40px rgba(167, 139, 250, 0.8);
-            }
-        }
-
-        /* Responsive */
-        @media (min-width: 768px) {
-            .about-container {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .discord-card {
-                display: flex;
-                align-items: center;
-                gap: 2rem;
-            }
-
-            .discord-content {
-                flex: 1;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-            }
-
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .nav-menu.active {
-                display: flex;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: rgba(15, 16, 20, 0.95);
-                backdrop-filter: blur(20px);
-                padding: 1rem 1.5rem;
-                border-bottom: 1px solid var(--border);
-            }
-        }
-
-        /* Icons (using SVG) */
-        .icon {
-            width: 1.5rem;
-            height: 1.5rem;
-            display: inline-block;
-            vertical-align: middle;
-        }
-
-        .icon-lg {
-            width: 1.75rem;
-            height: 1.75rem;
-        }
+        /* ---------- Utilidad: iconos ---------- */
+        .icon{ width:1.5rem; height:1.5rem; display:inline-block; vertical-align:middle; }
+        .icon-lg{ width:1.75rem; height:1.75rem; }
     </style>
 </head>
 <body>
@@ -598,75 +326,50 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Hero -->
     <section class="hero" id="inicio">
-        <div class="hero-bg"></div>
-        <div class="hero-blob-1"></div>
-        <div class="hero-blob-2"></div>
         <div class="hero-content">
             <div class="hero-badge">
-                <span>✨</span>
-                <span>Sistemas profesionales para Roblox Studio</span>
+                <span>✨</span><span>Sistemas profesionales para Roblox Studio</span>
             </div>
             <h1>okuSystem</h1>
             <p>Sistemas de sonido, visualizadores, luces y música de alta calidad para tus proyectos en Roblox Studio</p>
             <div class="hero-buttons">
-                <button class="btn btn-primary" onclick="scrollToSection('servicios')">
-                    Ver Servicios →
-                </button>
-                <button class="btn btn-outline" onclick="scrollToSection('contacto')">
-                    Contactar
-                </button>
+                <button class="btn btn-primary" onclick="scrollToSection('servicios')">Ver Servicios →</button>
+                <button class="btn btn-outline" onclick="scrollToSection('contacto')">Contactar</button>
             </div>
         </div>
     </section>
 
-    <!-- About Section -->
+    <!-- Sobre -->
     <section class="about" id="sobre">
         <div class="about-container">
             <div>
-                <div class="about-badge">
-                    <span>💻</span>
-                    <span>Sobre el creador</span>
-                </div>
+                <div class="about-badge"><span>💻</span><span>Sobre el creador</span></div>
                 <h2>oku</h2>
-                <p style="font-size: 1.25rem; color: var(--text-primary); margin-bottom: 1rem;">
-                    Programador especializado en códigos y sistemas para Roblox Studio
-                </p>
-                <p>
-                    Con años de experiencia en el desarrollo de sistemas profesionales, 
-                    creo soluciones personalizadas y de alta calidad para mejorar la 
-                    experiencia de tus juegos en Roblox.
-                </p>
+                <p style="font-size:1.15rem; color:var(--text); margin-bottom:1rem;">Programador especializado en códigos y sistemas para Roblox Studio</p>
+                <p>Con años de experiencia en el desarrollo de sistemas profesionales, creo soluciones personalizadas y de alta calidad para mejorar la experiencia de tus juegos en Roblox.</p>
             </div>
-            <div class="about-card">
+            <div class="about-card" id="aboutCard">
                 <div class="feature-item">
-                    <div class="feature-icon feature-icon-primary">
-                        <span style="font-size: 1.5rem;">✨</span>
-                    </div>
+                    <div class="feature-icon"><span style="font-size:1.4rem;">✨</span></div>
                     <div>
-                        <h3 style="font-weight: 600; font-size: 1.125rem; margin-bottom: 0.5rem;">Experiencia Profesional</h3>
-                        <p style="color: var(--text-secondary);">
-                            Sistemas optimizados y eficientes para juegos de cualquier escala
-                        </p>
+                        <h3 style="font-weight:700; font-size:1.1rem; margin-bottom:.4rem;">Experiencia Profesional</h3>
+                        <p style="color:var(--muted);">Sistemas optimizados y eficientes para juegos de cualquier escala</p>
                     </div>
                 </div>
                 <div class="feature-item">
-                    <div class="feature-icon feature-icon-secondary">
-                        <span style="font-size: 1.5rem;">💻</span>
-                    </div>
+                    <div class="feature-icon"><span style="font-size:1.4rem;">💻</span></div>
                     <div>
-                        <h3 style="font-weight: 600; font-size: 1.125rem; margin-bottom: 0.5rem;">Código Limpio</h3>
-                        <p style="color: var(--text-secondary);">
-                            Desarrollos bien estructurados, documentados y fáciles de mantener
-                        </p>
+                        <h3 style="font-weight:700; font-size:1.1rem; margin-bottom:.4rem;">Código Limpio</h3>
+                        <p style="color:var(--muted);">Desarrollos bien estructurados, documentados y fáciles de mantener</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Services Section -->
+    <!-- Servicios -->
     <section class="services" id="servicios">
         <div class="services-container">
             <div class="section-header">
@@ -675,30 +378,22 @@
             </div>
             <div class="services-grid">
                 <div class="service-card">
-                    <div class="service-icon">
-                        <span style="font-size: 1.75rem;">🎵</span>
-                    </div>
+                    <div class="service-icon"><span style="font-size:1.6rem;">🎵</span></div>
                     <h3>Sistemas de Música</h3>
                     <p>Sistemas completos con playlist, request de canciones y visualización de información en tiempo real.</p>
                 </div>
                 <div class="service-card">
-                    <div class="service-icon">
-                        <span style="font-size: 1.75rem;">📡</span>
-                    </div>
+                    <div class="service-icon"><span style="font-size:1.6rem;">📡</span></div>
                     <h3>Sync Systems</h3>
                     <p>Sincronización perfecta de audio y efectos visuales para experiencias inmersivas.</p>
                 </div>
                 <div class="service-card">
-                    <div class="service-icon">
-                        <span style="font-size: 1.75rem;">📊</span>
-                    </div>
+                    <div class="service-icon"><span style="font-size:1.6rem;">📊</span></div>
                     <h3>Visualizadores</h3>
                     <p>Visualizadores de audio personalizados que reaccionan en tiempo real a la música.</p>
                 </div>
                 <div class="service-card">
-                    <div class="service-icon">
-                        <span style="font-size: 1.75rem;">💡</span>
-                    </div>
+                    <div class="service-icon"><span style="font-size:1.6rem;">💡</span></div>
                     <h3>Sistemas de Luces</h3>
                     <p>Control avanzado de iluminación sincronizado con música y efectos especiales.</p>
                 </div>
@@ -706,7 +401,7 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
+    <!-- Contacto -->
     <section class="contact" id="contacto">
         <div class="contact-container">
             <div class="section-header">
@@ -716,24 +411,20 @@
             <div class="contact-grid">
                 <div class="contact-card">
                     <div class="contact-card-header">
-                        <div class="contact-icon feature-icon-primary">
-                            <span style="font-size: 1.5rem;">✉️</span>
-                        </div>
+                        <div class="contact-icon"><span style="font-size:1.4rem;">✉️</span></div>
                         <div>
-                            <h3 style="font-size: 1.125rem; font-weight: 600;">Email</h3>
-                            <p style="color: var(--text-secondary); font-size: 0.875rem;">Respuesta en 24-48h</p>
+                            <h3 style="font-size:1.05rem; font-weight:700;">Email</h3>
+                            <p style="color:var(--muted); font-size:.9rem;">Respuesta en 3:00 p.m / 12:00 a.m</p>
                         </div>
                     </div>
                     <a href="mailto:okusystems@gmail.com" class="footer-link">okusystems@gmail.com</a>
                 </div>
                 <div class="contact-card">
                     <div class="contact-card-header">
-                        <div class="contact-icon feature-icon-secondary">
-                            <span style="font-size: 1.5rem;">💬</span>
-                        </div>
+                        <div class="contact-icon"><span style="font-size:1.4rem;">💬</span></div>
                         <div>
-                            <h3 style="font-size: 1.125rem; font-weight: 600;">Discord Personal</h3>
-                            <p style="color: var(--text-secondary); font-size: 0.875rem;">Contacto directo</p>
+                            <h3 style="font-size:1.05rem; font-weight:700;">Discord Personal</h3>
+                            <p style="color:var(--muted); font-size:.9rem;">Contacto directo</p>
                         </div>
                     </div>
                     <p>okumarusempai</p>
@@ -742,24 +433,17 @@
             <div class="discord-card">
                 <div class="discord-content">
                     <div class="discord-header">
-                        <div class="discord-icon">
-                            <span style="font-size: 1.75rem; filter: brightness(0) invert(1);">🎮</span>
-                        </div>
+                        <div class="discord-icon"><span style="font-size:1.6rem; filter:brightness(0) invert(1);">🎮</span></div>
                         <div>
-                            <h3 style="font-size: 1.5rem; font-weight: 700;">Únete a la Comunidad</h3>
-                            <p style="color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
-                                <span>👥</span>
-                                Comunidad activa de desarrolladores
+                            <h3 style="font-size:1.35rem; font-weight:800;">Únete a la Comunidad</h3>
+                            <p style="color:var(--muted); display:flex; align-items:center; gap:.5rem;">
+                                <span>👥</span> Comunidad activa de desarrolladores
                             </p>
                         </div>
                     </div>
-                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-                        Obtén soporte, comparte ideas y descubre nuevos sistemas en nuestro servidor de Discord
-                    </p>
+                    <p style="color:var(--muted); margin-bottom:1.2rem;">Obtén soporte, comparte ideas y descubre nuevos sistemas en nuestro servidor de Discord</p>
                 </div>
-                <a href="https://discord.gg/vQpE6p3sSw" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="text-decoration: none;">
-                    🎮 Unirse al Discord
-                </a>
+                <a href="https://discord.gg/vQpE6p3sSw" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="text-decoration:none;">🎮 Unirse al Discord</a>
             </div>
         </div>
     </section>
@@ -769,15 +453,13 @@
         <div class="footer-container">
             <div class="footer-grid">
                 <div>
-                    <h3 class="font-display" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    <h3 class="font-display" style="font-size:1.5rem; font-weight:800; margin-bottom:1rem; background:linear-gradient(90deg,var(--gold),var(--gold-2)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">
                         okuSystem
                     </h3>
-                    <p style="color: var(--text-secondary);">
-                        Sistemas profesionales para Roblox Studio
-                    </p>
+                    <p style="color:var(--muted);">Sistemas profesionales para Roblox Studio</p>
                 </div>
                 <div>
-                    <h4 style="font-weight: 600; margin-bottom: 1rem;">Servicios</h4>
+                    <h4 style="font-weight:700; margin-bottom:1rem;">Servicios</h4>
                     <ul class="footer-links">
                         <li>Sync Systems</li>
                         <li>Sistemas de Sonido</li>
@@ -786,16 +468,10 @@
                     </ul>
                 </div>
                 <div>
-                    <h4 style="font-weight: 600; margin-bottom: 1rem;">Contacto</h4>
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        <a href="mailto:okusystems@gmail.com" class="footer-link">
-                            <span>✉️</span>
-                            okusystems@gmail.com
-                        </a>
-                        <a href="https://discord.gg/vQpE6p3sSw" target="_blank" rel="noopener noreferrer" class="footer-link">
-                            <span>🎮</span>
-                            Discord Server
-                        </a>
+                    <h4 style="font-weight:700; margin-bottom:1rem;">Contacto</h4>
+                    <div style="display:flex; flex-direction:column; gap:.75rem;">
+                        <a href="mailto:okusystems@gmail.com" class="footer-link"><span>✉️</span>okusystems@gmail.com</a>
+                        <a href="https://discord.gg/vQpE6p3sSw" target="_blank" rel="noopener noreferrer" class="footer-link"><span>🎮</span>Discord Server</a>
                     </div>
                 </div>
             </div>
@@ -806,46 +482,41 @@
     </footer>
 
     <script>
-        // Set current year
+        // Año actual
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        // Smooth scroll function
-        function scrollToSection(id) {
-            const element = document.getElementById(id);
-            if (element) {
-                const navHeight = document.querySelector('nav').offsetHeight;
-                const elementPosition = element.offsetTop - navHeight;
-                window.scrollTo({
-                    top: elementPosition,
-                    behavior: 'smooth'
-                });
-            }
-            // Close mobile menu if open
+        // Scroll suave + compensación del navbar
+        function scrollToSection(id){
+            const el = document.getElementById(id);
+            if(!el) return;
+            const navH = document.querySelector('nav').offsetHeight;
+            const top = el.offsetTop - navH;
+            window.scrollTo({ top, behavior:'smooth' });
             document.getElementById('navMenu').classList.remove('active');
         }
 
-        // Toggle mobile menu
-        function toggleMobileMenu() {
-            document.getElementById('navMenu').classList.toggle('active');
-        }
-
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
+        // Menú móvil
+        function toggleMobileMenu(){ document.getElementById('navMenu').classList.toggle('active'); }
+        document.addEventListener('click', (e)=>{
             const nav = document.querySelector('nav');
             const menu = document.getElementById('navMenu');
-            const menuBtn = document.querySelector('.mobile-menu-btn');
-            
-            if (!nav.contains(event.target) && menu.classList.contains('active')) {
-                menu.classList.remove('active');
-            }
+            if(!nav.contains(e.target) && menu.classList.contains('active')) menu.classList.remove('active');
+        });
+        document.querySelectorAll('a[href^="#"]').forEach(a=>{
+            a.addEventListener('click', e=> e.preventDefault());
         });
 
-        // Prevent default anchor behavior
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
+        // Efecto de seguimiento de luz en la about-card
+        const aboutCard = document.getElementById('aboutCard');
+        if (aboutCard){
+            aboutCard.addEventListener('pointermove', (e)=>{
+                const r = aboutCard.getBoundingClientRect();
+                const x = ((e.clientX - r.left) / r.width) * 100;
+                const y = ((e.clientY - r.top) / r.height) * 100;
+                aboutCard.style.setProperty('--mx', x + '%');
+                aboutCard.style.setProperty('--my', y + '%');
             });
-        });
+        }
     </script>
 </body>
 </html>
