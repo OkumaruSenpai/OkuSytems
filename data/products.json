@@ -1,0 +1,22 @@
+{
+  "products": [
+    {
+      "id": "seed1",
+      "title": "Visualizer Pro",
+      "image": "https://images.unsplash.com/photo-1546443046-ed1ce6ffd1b7?q=80&w=1200&auto=format&fit=crop",
+      "price": "$10",
+      "tag": "Nuevo",
+      "desc": "Visualizador reactivo con opciones avanzadas.",
+      "link": ""
+    },
+    {
+      "id": "seed2",
+      "title": "Sync Lights Pack",
+      "image": "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?q=80&w=1200&auto=format&fit=crop",
+      "price": "$12",
+      "tag": "Best Seller",
+      "desc": "Luces sincronizadas con efectos rítmicos.",
+      "link": ""
+    }
+  ]
+}
